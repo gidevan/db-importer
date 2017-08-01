@@ -14,15 +14,16 @@ import java.sql.Statement;
 @Service
 public class SqliteImportService implements ImportService {
     @Override
-    public void importData(String dbName) {
-        createDb(dbName);
+    public String importData(String dbName) {
+        return createDb(dbName);
     }
 
-    private void createDb(String dbName) {
+    private String createDb(String dbName) {
         Connection connection = null;
         try {
             // create a database connection
-            connection = DriverManager.getConnection("jdbc:sqlite:" + dbName);
+            String fileName = dbName + ".db";
+            connection = DriverManager.getConnection("jdbc:sqlite:" + fileName);
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -36,20 +37,22 @@ public class SqliteImportService implements ImportService {
                 System.out.println("name = " + rs.getString("name"));
                 System.out.println("id = " + rs.getInt("id"));
             }
-        }
-        catch(SQLException e) {
+            return fileName;
+        } catch(SQLException e) {
             // if the error message is "out of memory",
             // it probably means no database file is found
             System.err.println(e.getMessage());
         } finally {
             try {
-                if(connection != null)
+                if(connection != null) {
                     connection.close();
+                }
             } catch(SQLException e) {
                 // connection close failed.
                 System.err.println(e);
             }
         }
+        return null;
     }
 
     private void getData() {

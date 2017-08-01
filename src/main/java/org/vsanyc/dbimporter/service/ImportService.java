@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface ImportService {
-    void importData(String dbName);
+    String importData(String dbName);
 }
